@@ -1,0 +1,6 @@
+node_modules
+.env
+database.sqlite
+cafe_gau.db
+dist
+.DS_Store
