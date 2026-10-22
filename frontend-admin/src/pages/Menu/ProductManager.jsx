@@ -11,7 +11,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = 'https://cafegau-pos.onrender.com';
 const CATEGORIES = ['Cà phê', 'Trà Trái Cây', 'Trà Sữa', 'Bánh & Ăn Vặt'];
 const ITEMS_PER_PAGE = 10; // Giới hạn đúng 10 món mỗi trang
 

@@ -11,21 +11,19 @@ import {
   ChevronRight 
 } from 'lucide-react';
 
-const BACKEND_URL = 'http://localhost:5000';
-const ITEMS_PER_PAGE = 10; // Giới hạn đúng 10 bàn mỗi trang
+const BACKEND_URL = 'https://cafegau-pos.onrender.com';
+const ITEMS_PER_PAGE = 10; // Giới hạn 10 bàn mỗi trang
 
 export default function TableManager() {
-  const [clientDomain, setClientDomain] = useState(() => {
-    const host = window.location.hostname;
-    return `http://${host}:5174`;
-  });
+  // Mặc định dùng domain Vercel của khách hàng, có thể đổi trực tiếp trên giao diện
+  const [clientDomain, setClientDomain] = useState('https://cafegau-client.vercel.app');
 
   const [tables, setTables] = useState([]);
   const [newTableName, setNewTableName] = useState('');
   const [newTableArea, setNewTableArea] = useState('Tầng 1 - Trong nhà');
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Lấy danh sách bàn từ SQLite Backend
+  // Lấy danh sách bàn từ Backend Turso/Render
   const fetchTables = () => {
     fetch(`${BACKEND_URL}/api/tables`)
       .then((res) => res.json())
@@ -40,17 +38,7 @@ export default function TableManager() {
   useEffect(() => {
     fetchTables();
 
-    // 1. Tự động lấy IP mạng LAN thật của máy tính từ Backend
-    fetch(`${BACKEND_URL}/api/server-ip`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.ip && data.ip !== 'localhost') {
-          setClientDomain(`http://${data.ip}:5174`);
-        }
-      })
-      .catch((err) => console.error('Lỗi nhận diện IP máy chủ:', err));
-
-    // 2. Lắng nghe cập nhật trạng thái bàn realtime qua Socket.io
+    // Lắng nghe cập nhật trạng thái bàn realtime qua Socket.io
     const socket = io(BACKEND_URL);
     socket.on('tableUpdated', () => {
       fetchTables();
@@ -89,7 +77,6 @@ export default function TableManager() {
       });
       if (res.ok) {
         fetchTables();
-        // Nếu xóa phần tử duy nhất ở trang cuối thì lùi về trang trước
         if (currentTables.length === 1 && currentPage > 1) {
           setCurrentPage((prev) => prev - 1);
         }
@@ -138,8 +125,8 @@ export default function TableManager() {
             type="text"
             value={clientDomain}
             onChange={(e) => setClientDomain(e.target.value)}
-            className="px-3 py-1.5 bg-white border border-stone-300 rounded-lg text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-coffee-500"
-            placeholder="http://192.168.1.x:5174"
+            className="px-3 py-1.5 bg-white border border-stone-300 rounded-lg text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-coffee-500 w-64"
+            placeholder="https://cafegau-client.vercel.app"
           />
         </div>
       </div>
@@ -176,7 +163,7 @@ export default function TableManager() {
         </form>
       </div>
 
-      {/* Danh sách thẻ bàn kèm QR Code (Tối đa 10 bàn) */}
+      {/* Danh sách thẻ bàn kèm QR Code */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
         {currentTables.map((table) => {
           const cleanDomain = clientDomain.replace(/\/+$/, '');

@@ -7,7 +7,7 @@ import TableManager from './pages/Tables/TableManager';
 import OrderManager from './pages/PosOrders/OrderManager';
 
 
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = 'https://cafegau-pos.onrender.com';
 
 function App() {
   const [activeTab, setActiveTab] = useState('orders');
